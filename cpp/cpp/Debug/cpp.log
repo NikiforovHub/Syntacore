@@ -1,0 +1,9 @@
+﻿  cpp.cpp
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(48,23): warning C4018: '<': signed/unsigned mismatch
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(69,50): warning C4244: '+=': conversion from 'double' to 'unsigned int', possible loss of data
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(74,27): warning C4018: '<': signed/unsigned mismatch
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(56,23): warning C4101: 'rem': unreferenced local variable
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(56,28): warning C4101: 'k': unreferenced local variable
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(223,31): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+E:\MATLAB\Syntacore\cpp\cpp\cpp.cpp(229,17): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+  cpp.vcxproj -> E:\MATLAB\Syntacore\cpp\Debug\cpp.exe
