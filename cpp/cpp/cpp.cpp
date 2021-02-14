@@ -1,4 +1,4 @@
-﻿// cpp.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+// cpp.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
 #include <iostream>
@@ -34,8 +34,8 @@ unsigned int grayencode(unsigned int g)
     return g ^ (g >> 1);
 }
 
-unsigned int weight(unsigned int vec) {
-    unsigned int weight = 0;
+unsigned long long weight(unsigned long long vec) {
+    unsigned long long weight = 0;
     while (vec) {
         weight += vec & 1;
         vec >>= 1;
@@ -44,17 +44,17 @@ unsigned int weight(unsigned int vec) {
 }
 
 
-void writeMy(std::ofstream &out, std::vector<unsigned int> x) {
+void writeMy(std::ofstream &out, std::vector<unsigned long long> x) {
     for (int i = 0; i < x.size(); i++) {
         out << i << "\t" << x[i] << "\n";
     }
 }
 
-void readMy(std::ifstream& in, std::vector<unsigned int>& x, unsigned int& kmax) {
+void readMy(std::ifstream& in, std::vector<unsigned long long>& x, unsigned long long& kmax) {
     kmax = 0;
     std::string bin;
-    unsigned int dec, rem, k;
-    unsigned int a;
+    unsigned long long dec, rem, k;
+    int a;
 
 
 
@@ -66,21 +66,23 @@ void readMy(std::ifstream& in, std::vector<unsigned int>& x, unsigned int& kmax)
         for (int i = bin.size() - 1; i >= 0; i--) {
 
             a = bin[i] - '0'; // преобразование char в соответствующее число
-            dec += a * pow(2, bin.size() - i - 1);
+            dec += a * pow( 2, bin.size() - i - 1);
             
 
         }
 
+        // вывод на экран
         for (int i = 0; i < bin.size(); i++) {
             a = bin[i] - '0'; // преобразование char в соответствующее число
             std::cout << a;
         }
-
+        
         std::cout << "\n";
 
         std::cout << "dec: " << dec << "\n";
 
         std::cout << "\n";
+        
 
         x.push_back(dec);
 
@@ -192,51 +194,104 @@ int main()
 
     ////////// main code
     
-    /*std::string path = "E:/MATLAB/Syntacore/cpp/cpp/out";
+    std::vector<unsigned long long> vecs;
+
+
+    
+    std::string path = "E:/MATLAB/Syntacore/cpp/cpp/in";
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
         std::cout << entry.path() << std::endl;
 
+        
+        std::ifstream infile(entry.path());
+        unsigned long long kmax, kconstrain;
 
+        readMy(infile, vecs, kmax);
+        infile.close();
+
+        std::vector<unsigned long long> weights(kmax + 1, 0);
+
+        unsigned long long vec = 0;
+        unsigned long long m;
+
+        std::cout << "weights.size():  " << weights.size() << "\n";
+        std::cout << "vecs.size()  " << vecs.size() << "\n";
+
+        kconstrain = pow(2, kmax) - 1;
+        std::cout << "kconstrain " << kconstrain << "\n";
+
+
+        weights[0] += 1;
+        for (unsigned long long i = 0; i < pow(2, vecs.size()) - 1; i++) {
+            m = log2((~i & (i + 1)));
+            //std::cout << "m " << i << ": "<< m << "\n";
+            vec = vec ^ vecs[m];
+
+            //std::cout << "weight(vec) " << weight(vec) << "\n";
+            weights[weight(vec)] += 1;
+
+            /*if (i > 33554432) {
+                
+                
+                std::cout << "for file " << entry.path() << " breaked" << "\n" << "\n";
+                break;
+            }*/ 
+        }
+
+        std::string path2 = "E:/MATLAB/Syntacore/cpp/cpp/outMy/" + entry.path().filename().u8string();
+        std::cout << "\n" << path2 << "\n";
+
+
+        std::ofstream outfile(path2);
+        writeMy(outfile, weights);
+        outfile.close();
+
+        vecs.clear();
+
+
+        //сравниваем получившийся файл с тестовым
+
+        std::string path3 = "E:/MATLAB/Syntacore/cpp/cpp/out/" + entry.path().filename().u8string();
+        std::cout <<  path3 << "\n";
+        std::ifstream i1(path2), i2(path3);
+        if (!i1 || !i2) { std::cerr << "File not found"; return -1; }
+        std::string s1((std::istreambuf_iterator<char>(i1)), std::istreambuf_iterator<char>());
+        std::string s2((std::istreambuf_iterator<char>(i2)), std::istreambuf_iterator<char>());
+        std::cout <<  std::boolalpha << (s1 == s2) << "\n" << "\n";
+        i1.close();
+        i2.close();
+    }
+    
+    
+    /// сравнение файлов
+    /*
+    std::string path1 = "E:/MATLAB/Syntacore/cpp/cpp/out";
+    std::string path2 = "E:/MATLAB/Syntacore/cpp/cpp/outMy";
+    for (const auto& entry : std::filesystem::directory_iterator(path1)) {
+        std::cout << entry.path() << std::endl;
+        std::string pathMy = "E:/MATLAB/Syntacore/cpp/cpp/outMy/" + entry.path().filename().u8string();
+
+        std::cout << entry.path().filename().u8string() << std::endl;
+        std::cout << pathMy << std::endl;
+
+        std::ifstream i1(entry.path()), i2(pathMy);
+        if (!i1 || !i2) { std::cerr << "File not found"; return -1; }
+        std::string s1((std::istreambuf_iterator<char>(i1)), std::istreambuf_iterator<char>());
+        std::string s2((std::istreambuf_iterator<char>(i2)), std::istreambuf_iterator<char>());
+        std::cout << std::boolalpha << (s1 == s2) << "\n";
+        i1.close();
+        i2.close();
+     
 
 
     }
+
     */
-    
+
     
      
     
-    std::vector<unsigned int> vecs;
-    std::ifstream infile("tst_24_8.txt");
-    unsigned int kmax, kconstrain;
-
-    readMy(infile, vecs, kmax);
-    infile.close();
-
-    std::vector<unsigned int> weights(kmax + 1, 0);
-
-    unsigned int vec = 0;
-    unsigned int m;
-
-    std::cout << "weights.size():  " << weights.size() << "\n";
-    std::cout << "vecs.size()  " << vecs.size() << "\n";
-
-    kconstrain = pow(2, kmax) - 1;
-    std::cout << "kconstrain " << kconstrain << "\n";
-
-
-    weights[0] += 1;
-    for (unsigned int i = 0; i < pow(2, vecs.size()) - 1; i++) {
-        m = log2( (~i & (i + 1))   );
-        //std::cout << "m " << i << ": "<< m << "\n";
-        vec = vec ^ vecs[m];
-
-        //std::cout << "weight(vec) " << weight(vec) << "\n";
-        weights[weight(vec)] += 1;
-    }
     
-    std::ofstream outfile("output.txt");
-    writeMy(outfile, weights);
-    outfile.close();
     
 
     
