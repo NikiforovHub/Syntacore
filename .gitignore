@@ -3,5 +3,5 @@ readTmp.m
 tmp.m
 filename.txt
 vectors.txt
-\cpp\cpp\tmp
-\cpp\cpp\Debug
+/cpp/cpp/tmp
+/cpp/cpp/Debug
