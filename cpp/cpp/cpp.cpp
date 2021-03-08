@@ -66,6 +66,7 @@ void readMy(std::ifstream& in, std::vector<std::valarray<unsigned long long> >& 
             dec += a * pow(2, bin.size() - i - idx*kLimit - 1);
             k += 1;
             if (k == kLimit || i == 0) {
+                //вывод на экран
                 /*std::cerr << "\n";
 
                 std::cerr << "dec: " << dec << "\n";
@@ -114,15 +115,7 @@ void parallelFunc(int threadNum, unsigned long long start, unsigned long long en
     for (unsigned long long i = start; i < end; i++) {
         m = log2((~i & (i + 1))); //номер изменившегося бита в коде Грея
         vec = vec ^ vecs[m];
-        /*if (i % 100000 == 0) {
-            std::cerr << "Thread: " << threadNum << " .iteration: " << i << "\n";
-            //std::time_t result = std::time(nullptr);
-            //std::cerr << std::asctime(std::localtime(&result));
-        }*/
-        //unsigned long long w = weight(vec);
         weights_internal[weight(vec)] += 1;
-        
-        
     }
 
     std::lock_guard<std::mutex> lock(mut_weights);
@@ -137,26 +130,22 @@ void parallelFunc(int threadNum, unsigned long long start, unsigned long long en
 int main(int argc, char* argv[])
 {
     const int numThreads = 12;
-    bool checkFiles = true;
+    bool checkFiles = false; // нужно ли сверять файлы с эталоном
 
     std::vector<std::valarray<unsigned long long> > vecs;
     std::filesystem::path path = std::filesystem::path("E:/MATLAB/Syntacore/cpp/cpp/in").make_preferred();
     std::filesystem::path folderOut = std::filesystem::path("E:/MATLAB/Syntacore/cpp/cpp/outMy/").make_preferred();
     std::filesystem::path folderCheck = std::filesystem::path("E:/MATLAB/Syntacore/cpp/cpp/out/").make_preferred();
 
-    //std::string path = "E:/MATLAB/Syntacore/cpp/cpp/in";
-    //std::string folderOut = "E:/MATLAB/Syntacore/cpp/cpp/outMy/";
-    //std::string folderCheck = "E:/MATLAB/Syntacore/cpp/cpp/out/";
-
-
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
         std::cerr << entry.path() << std::endl;
 
-        
+
         std::ifstream infile(entry.path());
         unsigned long long kmax;
         readMy(infile, vecs, kmax);
         infile.close();
+
 
         std::vector<unsigned long long> weights(kmax + 1, 0);
         std::mutex weights_mutex;
@@ -167,9 +156,9 @@ int main(int argc, char* argv[])
         std::cerr << "weights.size():  " << weights.size() << "\n";
         std::cerr << "vecs.size()  " << vecs.size() << "\n";
 
-        //вычисляем векторные суммы и веса
         
         
+        //вычисляем векторные суммы и веса в нескольких потоках
         unsigned long long start[numThreads];
         unsigned long long end[numThreads];
         unsigned long long numOp = pow(2, vecs.size()) - 1;
@@ -192,33 +181,11 @@ int main(int argc, char* argv[])
         for (int i = 0; i < numThreads; i++) {
             threads[i] = std::thread(parallelFunc, i, start[i], end[i], std::ref(weights_mutex), vecs, std::ref(weights));
         }
-        
-
-        
-        //std::thread t(parallelFunc, 0, 0, pow(2, vecs.size()) - 2, std::ref(weights_mutex), vecs, std::ref(weights));
-        //t.join();
         for (int i = 0; i < numThreads; i++) {
             threads[i].join();
         }
         
-        /*
-        for (unsigned long long i = 0; i < pow(2, vecs.size()) - 1; i++) {
-            m = log2((~i & (i + 1))); //номер изменившегося бита в коде Грея
-            vec = vec ^ vecs[m];
-            if (i % 100000 == 0) {
-                std::cerr << "iteration: " << i << "\n";
-                std::time_t result = std::time(nullptr);
-                std::cerr << std::asctime(std::localtime(&result));
-            }
-            unsigned long long w = weight(vec);
-            weights[weight(vec)] += 1;
-        }
-
-        */
-
-
         std::filesystem::path pathOut = folderOut / entry.path().filename();
-        //std::string pathOut = folderOut.u8string() + entry.path().filename().u8string();
         std::cerr << pathOut << "\n";
 
         std::ofstream outfile(pathOut);
@@ -227,11 +194,8 @@ int main(int argc, char* argv[])
         
         vecs.clear();
         
-
-        //сравниваем получившийся файл с тестовым
-
-
         if (checkFiles) {
+            //сравниваем получившийся файл с тестовым
             std::filesystem::path pathCheck = folderCheck / entry.path().filename();
             std::cerr << pathCheck << "\n";
             std::ifstream i1(pathOut), i2(pathCheck);
@@ -243,7 +207,7 @@ int main(int argc, char* argv[])
             i2.close();
         }
         else {
-            std::cout << "Output file written to " << pathOut << "\n";
+            std::cout << "Output file written to " << pathOut << "\n\n";
         }
     }
    
