@@ -5,4 +5,9 @@ filename.txt
 vectors.txt
 /cpp/cpp/tmp/
 /cpp/cpp/Debug/
+/cpp/cpp/cpp.vcxproj*
 /cpp/Debug/
+/cpp/.vs/
+/cpp/cpp.sln
+questions.txt
+questions.docx
